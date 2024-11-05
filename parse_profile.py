@@ -15,6 +15,17 @@ patterns = {
 # Initialize a dictionary to store extracted information
 extracted_data = {}
 
+with open(file_path, "r") as txt_file:
+    data = txt_file.read()
+
+# Parse the data into a dictionary
+data_dict = json.loads(data)
+
+# Save as a JSON file
+with open("data.json", "w") as json_file:
+    json.dump(data_dict, json_file, indent=4)
+
+
 # Read the content of the text file
 with open(file_path, "r") as file:
     content = file.read()

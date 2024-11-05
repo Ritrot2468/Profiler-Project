@@ -10,10 +10,10 @@ response = openai.ChatCompletion.create(
     model="gpt-4o",
     messages=[
         {"role": "system", "content": "You are a helpful assistant for retrieving researcher profiles."},
-        {"role": "user", "content": f"Provide information about {name} at {organization}, including 'address', 'faculty', 'research areas', 'recent publication names', and 'contact info'."}
+        {"role": "user", "content": f"Provide information about {name} at {organization}, including 'address', 'faculty', 'research areas', 'recent publication names', and 'contact info' in JSON format."}
     ],
-    max_tokens=200,
-    temperature=0.8
+    max_tokens=300,
+    temperature=0.9
 )	
 	#note to optimize of temperature parameter in future?????
 	
@@ -22,9 +22,22 @@ structured_data = response.choices[0].message['content']
 print(structured_data)
 
 file_path = "researcher_profile.txt"
+json_file_path = "research_profile.json"
 
-# Open the file in write mode
-with open(file_path, "w") as text_file:
-    # Write the string to the file
-    text_file.write(structured_data)
+try:
+    structured_json = json.loads(structured_data)
+    print(structured_json)
+    with open(json_file_path, "w") as text_file:
+        text_file.write(structured_json)
+
+except json.JSONDecodeError:
+    print("Response is not in JSON format. Here is the raw content:")
+    print(structured_data)
+
+
+json_object = json.dumps(structured_data, indent=4)
+ 
+# Writing to sample.json
+with open(json_file_path, "w") as outfile:
+    outfile.write(json_object)
 
