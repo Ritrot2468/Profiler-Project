@@ -35,6 +35,7 @@ const segmentScoreMap = {
   HOSP: 2,
   REF: 10,
   "LIFE SCI": 2,
+  "unclassified": 0
 };
 
 
@@ -44,12 +45,14 @@ const segmentScoreMap = {
  * @returns {Array} Parsed search results
  */
 const sendGoogleSearchResponse = async (query) => {
-  const refinedQuery = `"${query}" funding intitle:${query}`;
+  //const refinedQuery = `${query} funding`;
+  const refinedQuery = `'${query}' funding AND $`
   const url = `https://www.googleapis.com/customsearch/v1?q=${encodeURIComponent(
     refinedQuery
-  )}&key=${API_KEY}&cx=${SEARCH_ENGINE_ID}`;
+  )}&num=4&key=${API_KEY}&cx=${SEARCH_ENGINE_ID}`;
   try {
     const response = await axios.get(url );
+    console.log(response)
     const data = response.data;
 
     if (!data.items) {
@@ -89,11 +92,17 @@ const parseFundingAmounts = (response) => {
     return [];
   }
 
+  console.log("Funding results: ", response)
   // Regex pattern to capture funding amounts
-  const fundingRegex = /[$£]?(\d+(?:\.\d+)?)\s?(million|billion|M|B|k|K)/i;
+  //const fundingRegex = /[$£]?(\d+(?:\.\d+)?)\s?(million|billion|M|B|k|K)/i;
+ // const fundingRegex = /^[$£](\d+(?:\.\d+)?)\s?(million|billion|M|B|k|K)/i;
+  const fundingRegex = /[$£](\d+(?:\.\d+)?)\s?(million|billion|M|B|k|K)/i;
 
 
-  //const fundingRegex = /\$?\d+(\.\d+)?\s?(million|billion|M|B|k|K|£)/i;
+  //const fundingRegex = /([$£])(\d+(?:\.\d+)?)\s?(million|billion|M|B|k|K)|(\d+(?:\.\d+)?)([$£])\s?(million|billion|M|B|k|K)/i;
+
+
+ // const fundingRegex = /\$?\d+(\.\d+)?\s?(million|billion|M|B|k|K|£)/i;
 
   // Keywords indicating funding
   //const fundingKeywords = ["funding", "grant", "investment", "round", "raised"];
@@ -107,6 +116,7 @@ const parseFundingAmounts = (response) => {
         .filter(Boolean)
         .join(" ");
 
+        console.log(content)
       // Check for funding amount
       const match = content.match(fundingRegex);
       console.log(match)
@@ -119,7 +129,7 @@ const parseFundingAmounts = (response) => {
         } else if (multiplier.toLowerCase().includes("billion") || multiplier.toLowerCase() === "B") {
           normalizedAmount *= 1e9;
         }
-
+        console.log(normalizedAmount);
         return {
           Title,
           Link,
@@ -158,10 +168,19 @@ app.get("/search/:accountName", async (req, res) => {
   try {
     const response = await sendGoogleSearchResponse(accountName);
     const fundingResults = parseFundingAmounts(response);
-    const fundingAmount = fundingResults.reduce(
-      (sum, result) => sum + parseFloat(result.FundingAmount.replace(/[$,]/g, "")),
-      0
+    const uniqueFundingAmounts = new Set(
+      fundingResults.map((result) => {
+        const parsedAmount = parseFloat(result.FundingAmount.replace(/[$,]/g, ""));
+        return parsedAmount;
+      })
     );
+
+    const fundingAmount = Array.from(uniqueFundingAmounts).reduce((sum, amount) => sum + amount, 0);
+
+    // const fundingAmount = fundingResults.reduce(
+    //   (sum, result) => sum + parseFloat(result.FundingAmount.replace(/[$,]/g, "")),
+    //   0
+    // );
     const fundingScore = calculateFundingScore(fundingAmount);
 
     const productScore =
@@ -186,6 +205,8 @@ app.get("/search/:accountName", async (req, res) => {
       total_score: totalScore,
       priority,
     };
+    const outputFilePath = `${accountName}_search_results.xlsx`;
+    saveToExcel(results, outputFilePath);
 
     res.status(200).json(accountData);
   } catch (error) {
