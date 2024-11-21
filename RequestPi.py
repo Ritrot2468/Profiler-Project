@@ -1,16 +1,35 @@
 import openai
 import json
+from dotenv import load_dotenv
+import os
+
+
+load_dotenv()
 	
-openai.api_key = "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"
+openai.api_key = os.getenv("OPENAI_API_KEY")
 	
-name = "Eric Jan"
+name = "Anna Blakney"
 organization = "UBC"
 # send an API request to Open API
 response = openai.ChatCompletion.create(
     model="gpt-4o",
     messages=[
         {"role": "system", "content": "You are a helpful assistant for retrieving researcher profiles."},
-        {"role": "user", "content": f"Provide information about {name} at {organization}, including 'address', 'faculty', 'research areas', 'recent publication names', and 'contact info' in JSON format."}
+        {"role": "user", "content": f"Provide information about {name} at {organization}, including 'address', 'faculty', 'research areas', 'recent publication names', and 'contact info' in JSON format, structured like:\n\n"
+                                     "var researcherData = {\n"
+                                     "    name: \"Name\",\n"
+                                     "    building: \"Building Name\",\n"
+                                     "    department: \"Department Name\",\n"
+                                     "    faculty: \"Faculty Name\",\n"
+                                     "    research_areas: [\"Research Area 1\", \"Research Area 2\"],\n"
+                                     "    recent_publications: [\"Publication Title 1\", \"Publication Title 2\"],\n"
+                                     "    contact_info: {\n"
+                                     "        email: \"email@example.com\",\n"
+                                     "        phone: \"123-456-7890\"\n"
+                                     "    }\n"
+                                     "};"
+        }
+       ## {"role": "user", "content": f"Provide information about {name} at {organization}, including 'address', 'faculty', 'research areas', 'recent publication names', and 'contact info' in JSON format."}
     ],
     max_tokens=300,
     temperature=0.9
