@@ -7,7 +7,8 @@
     "xlsx": "^0.18.5"
   },
   "devDependencies": {
-    "concurrently": "^9.1.0"
+    "concurrently": "^9.1.0",
+    "react-scripts": "^5.0.1"
   },
   "scripts": {
     "start": "concurrently \"npm run start-backend\" \"npm run start-frontend\"",
