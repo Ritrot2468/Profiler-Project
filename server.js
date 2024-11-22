@@ -206,7 +206,7 @@ app.get("/search/:accountName", async (req, res) => {
       priority,
     };
     const outputFilePath = `${accountName}_search_results.xlsx`;
-    saveToExcel(results, outputFilePath);
+    saveToExcel(response, outputFilePath);
 
     res.status(200).json(accountData);
   } catch (error) {
