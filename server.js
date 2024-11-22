@@ -240,9 +240,9 @@ app.get('/search/:accountName', async (req, res) => {
 });
 
 
-// app.get("/", (req, res) => {
-//     res.send("Welcome to the Search API! Use /search/:accountName to perform a search.");
-//   });
+app.get("/", (req, res) => {
+    res.send("Welcome to the Search API! Use /search/:accountName to perform a search.");
+  });
 
 
 // Search endpoint
