@@ -11,14 +11,38 @@ const { log } = require("console");
 dotenv.config();
 
 const app = express();
-app.use(cors())
+const BACKEND_URL = process.env.BACKEND_URL;
+const allowedOrigins = [
+  "http://127.0.0.1:3000", 
+  "http://localhost:3000", 
+  BACKEND_URL
+];
+
+app.use(cors({
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
+  methods: ["GET", "POST", "PUT", "DELETE"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+}));
+
+// app.use(cors({
+//   origin: BACKEND_URL, 
+//   methods: ["GET", "POST", "PUT", "DELETE"],
+//   allowedHeaders: ["Content-Type", "Authorization"],
+// }))
 const PORT = process.env.PORT || 5000;
 
 const API_KEY = process.env.GOOGLE_API_KEY;
 const SEARCH_ENGINE_ID = process.env.SEARCH_ENGINE_ID;
 
 
-if (!API_KEY || !SEARCH_ENGINE_ID) {
+
+if (!API_KEY || !SEARCH_ENGINE_ID || !BACKEND_URL) {
     console.error("Missing required environment variables: GOOGLE_API_KEY or SEARCH_ENGINE_ID");
     process.exit(1);
   }
@@ -46,10 +70,10 @@ const segmentScoreMap = {
  */
 const sendGoogleSearchResponse = async (query) => {
   //const refinedQuery = `${query} funding`;
-  const refinedQuery = `'${query}' funding AND $`
+  const refinedQuery = `'${query}' funding`
   const url = `https://www.googleapis.com/customsearch/v1?q=${encodeURIComponent(
     refinedQuery
-  )}&num=4&key=${API_KEY}&cx=${SEARCH_ENGINE_ID}`;
+  )}&num=7&key=${API_KEY}&cx=${SEARCH_ENGINE_ID}`;
   try {
     const response = await axios.get(url );
     console.log(response)
@@ -157,7 +181,7 @@ const calculateFundingScore = (fundingAmount) => {
 };
 
 
-app.get("/search/:accountName", async (req, res) => {
+app.get('/search/:accountName', async (req, res) => {
   const { accountName } = req.params;
   const { productCode, segment } = req.query;
 
