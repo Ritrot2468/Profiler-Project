@@ -30,8 +30,25 @@ const BACKEND_URL = process.env.BACKEND_URL;
 //   allowedHeaders: ["Content-Type", "Authorization"],
 // }));
 
-app.use(cors())
+// app.use(cors())
 const PORT = process.env.PORT || 5000;
+const allowedOrigins = [
+  BACKEND_URL, // Replace with your Vercel domain
+  `http://localhost:${PORT}`, // For local testing
+  `http://localhost:3000`
+];
+
+app.use(cors({
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
+  methods: ["GET", "POST"],
+  allowedHeaders: ["Content-Type"],
+}));
 
 const API_KEY = process.env.GOOGLE_API_KEY;
 const SEARCH_ENGINE_ID = process.env.SEARCH_ENGINE_ID;
