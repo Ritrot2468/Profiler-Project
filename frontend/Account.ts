@@ -1,4 +1,8 @@
 import * as fs from 'fs';
+const dotenv = require("dotenv");
+dotenv.config();
+
+const BACKEND_URL = process.env.BACKEND_URL;
 
 export type Account = {
     account_name: string;
