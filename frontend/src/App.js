@@ -13,6 +13,8 @@ const segmentScoreMap = {
   "LIFE SCI": 2,
   unclassified: 0,
 };
+const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
+//console.log("BACKEND URL:", BACKEND_URL)
 
 function App() {
   const [accountName, setAccountName] = useState("");
@@ -34,9 +36,8 @@ function App() {
 
     try {
       const response = await axios.get(
-        `http://localhost:5000/search/${encodeURIComponent(accountName)}?productCode=${encodeURIComponent(
-          productCode
-        )}&segment=${encodeURIComponent(segment)}`
+        `${BACKEND_URL}/search/${encodeURIComponent(accountName)}?productCode=${encodeURIComponent(
+          productCode)}&segment=${encodeURIComponent(segment)}`
       );
       setResults([response.data]); // Wrap in array for consistent display
     } catch (err) {

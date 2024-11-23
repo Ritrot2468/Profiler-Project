@@ -2,7 +2,7 @@ import * as fs from 'fs';
 const dotenv = require("dotenv");
 dotenv.config();
 
-const BACKEND_URL = process.env.BACKEND_URL;
+const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 
 export type Account = {
     account_name: string;
@@ -47,12 +47,24 @@ export type Account = {
  
   async function fetchFundingAmount(accountName: string): Promise<number> {
     try {
-      const response = await fetch(`/search/${encodeURIComponent(accountName)}`);
+      const response = await fetch(`${BACKEND_URL}/search/${encodeURIComponent(accountName)}`);
       const data = await response.json();
       return data.sum || 0;
     } catch (error) {
       console.error(`Error fetching funding amount for ${accountName}:`, error);
       return 0;
+    }
+  }
+
+  export async function fetchFundingData(accountName: string, productCode: string, acctSegment: string): Promise<any> {
+    try {
+      const response = await fetch(`${BACKEND_URL}/search/${encodeURIComponent(accountName)}?productCode=${encodeURIComponent(
+          productCode
+        )}&segment=${encodeURIComponent(acctSegment)}`);
+      
+      return response.json();
+    } catch (error) {
+      throw new Error(`Error fetching funding amount for ${accountName}:`, error);
     }
   }
 
