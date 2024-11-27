@@ -12,31 +12,9 @@ dotenv.config();
 
 const app = express();
 const BACKEND_URL = process.env.BACKEND_URL;
-// const allowedOrigins = [
-//   "http://127.0.0.1:3000", 
-//   "http://localhost:3000", 
-//   BACKEND_URL
-// ];
 
-// app.use(cors({
-//   origin: function (origin, callback) {
-//     if (!origin || allowedOrigins.includes(origin)) {
-//       callback(null, true);
-//     } else {
-//       callback(new Error("Not allowed by CORS"));
-//     }
-//   },
-//   methods: ["GET", "POST", "PUT", "DELETE"],
-//   allowedHeaders: ["Content-Type", "Authorization"],
-// }));
-
-// app.use(cors())
 const PORT = process.env.PORT || 5000;
-const allowedOrigins = [
-  BACKEND_URL, // Replace with your Vercel domain
-  `http://localhost:${PORT}`, // For local testing
-  `http://localhost:3000`
-];
+
 
 app.use(cors({
   origin: '*',
@@ -76,7 +54,6 @@ const segmentScoreMap = {
  * @returns {Array} Parsed search results
  */
 const sendGoogleSearchResponse = async (query) => {
-  //const refinedQuery = `${query} funding`;
   const refinedQuery = `'${query}' funding`
   const url = `https://www.googleapis.com/customsearch/v1?q=${encodeURIComponent(
     refinedQuery
@@ -135,9 +112,6 @@ const parseFundingAmounts = (response) => {
 
  // const fundingRegex = /\$?\d+(\.\d+)?\s?(million|billion|M|B|k|K|£)/i;
 
-  // Keywords indicating funding
-  //const fundingKeywords = ["funding", "grant", "investment", "round", "raised"];
-  //console.log(response)
   const fundingResults = response
     .map((result) => {
       const { Title, Link, Snippet, PageMap } = result;
@@ -207,13 +181,9 @@ app.get('/search/:accountName', async (req, res) => {
     );
 
     const fundingAmount = Array.from(uniqueFundingAmounts).reduce((sum, amount) => sum + amount, 0);
-
-    // const fundingAmount = fundingResults.reduce(
-    //   (sum, result) => sum + parseFloat(result.FundingAmount.replace(/[$,]/g, "")),
-    //   0
-    // );
     const fundingScore = calculateFundingScore(fundingAmount);
 
+    // search for product score
     const productScore =
       productScores.find(
         (ps) =>
@@ -251,50 +221,6 @@ app.get("/", (req, res) => {
     res.send("Welcome to the Search API! Use /search/:accountName to perform a search.");
   });
 
-
-// Search endpoint
-// app.get("/search/:accountName", async (req, res) => {
-//   const accountName = req.params.accountName;
-//   const productCode = req.params.productCode;
-//   const accountSegment = req.params.accountSegment;
-
-//   if (!accountName) {
-//     return res.status(400).json({ error: "Account name is required" });
-//   }
-//   // }
-//   // if (!productCode || productCode.length != 6) {
-//   //   return res.status(400).json({ error: "Invalid Product Code" });
-//   // }
-//   // if (!accountSegment) {
-//   //   return res.status(400).json({ error: "Missing or Invalid account segment" });
-//   // }
-
-//   try {
-//     // Fetch search results
-//     let sum = 0
-//     const response = await sendGoogleSearchResponse(accountName);
-//     console.log(response);
-//     const results = await parseFundingAmounts(response);
-//     results.map(result => {
-//       sum += parseFloat(result.FundingAmount.replace(/[$,]/g, ""));
-//     })
-  
-
-//     if (results.length === 0) {
-//       return res.status(404).json({ error: "No results found" });
-//     }
-
-//     // Save results to Excel
-//     const outputFilePath = `${accountName}_search_results.xlsx`;
-//     saveToExcel(results, outputFilePath);
-
-//     // Send response
-//     res.status(200).json({ sum: sum });
-//   } catch (error) {
-//     console.error(error.message);
-//     res.status(500).json({ error: "An unexpected error occurred" });
-//   }
-// });
 
 // Start the server
 app.listen(PORT, () => {
