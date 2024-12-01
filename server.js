@@ -3,18 +3,16 @@ const axios = require("axios");
 const xlsx = require("xlsx");
 const dotenv = require("dotenv");
 const fs = require("fs");
-const path = require("path");
 const cors = require('cors');
-const { log } = require("console");
 
-// Load environment variables
 dotenv.config();
 
 const app = express();
-const BACKEND_URL = process.env.BACKEND_URL;
-
 const PORT = process.env.PORT || 5000;
 
+const API_KEY = process.env.GOOGLE_API_KEY;
+const SEARCH_ENGINE_ID = process.env.SEARCH_ENGINE_ID;
+const BACKEND_URL = process.env.BACKEND_URL;
 
 app.use(cors({
   origin: '*',
@@ -22,8 +20,7 @@ app.use(cors({
   allowedHeaders: ["Content-Type"],
 }));
 
-const API_KEY = process.env.GOOGLE_API_KEY;
-const SEARCH_ENGINE_ID = process.env.SEARCH_ENGINE_ID;
+
 
 
 
