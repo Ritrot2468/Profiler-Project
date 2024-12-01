@@ -64,7 +64,7 @@ export type Account = {
       
       return response.json();
     } catch (error) {
-      throw new Error(`Error fetching funding amount for ${accountName}:`, error);
+      throw new Error(`Error fetching funding amount for ${accountName}:`);
     }
   }
 

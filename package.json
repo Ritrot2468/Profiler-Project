@@ -1,9 +1,10 @@
 {
   "dependencies": {
-    "axios": "^1.7.7",
+    "axios": "^1.7.8",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "express": "^4.21.1",
+    "fs": "^0.0.1-security",
     "xlsx": "^0.18.5"
   },
   "devDependencies": {
@@ -13,7 +14,7 @@
   "scripts": {
     "start": "concurrently \"npm run start-backend\" \"npm run start-frontend\"",
     "build": "react-scripts build",
-    "start-backend": "node server.js",
+    "start-backend": "node index.js",
     "start-frontend": "npm start --prefix frontend"
   }
 }
