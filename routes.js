@@ -27,11 +27,11 @@ router.get('/search/:accountName', async (req, res) => {
     }
 
     try {
-        const response = sendGoogleSearchResponse(accountName);
-        console.log(response)
-        const gptResponse = await sendDataToOpenAI(response);
-        console.log(gptResponse)
-        const accountData = parseAndSaveFundingAmounts(response, accountName, productCode, segment, gptResponse);
+       //  const response = sendGoogleSearchResponse(accountName);
+       // console.log("Google response", response)
+       //  // const gptResponse = await sendDataToOpenAI(response);
+        // console.log(gptResponse)
+        const accountData = await parseAndSaveFundingAmounts(accountName, productCode, segment);
         res.status(200).json(accountData);
     } catch (error) {
         console.error("Error processing request:", error.message);
