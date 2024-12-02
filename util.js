@@ -3,6 +3,7 @@ const xlsx = require("xlsx");
 const API_KEY = process.env.GOOGLE_API_KEY;
 const SEARCH_ENGINE_ID = process.env.SEARCH_ENGINE_ID;
 const axios = require("axios");
+const {BACKEND_URL} = require("./config");
 /**
  * Fetches and parses Google Custom Search API response
  * @param {string} query - Search query
@@ -46,7 +47,7 @@ const parseFundingAmounts = (response) => {
     const fundingRegex = /[$£](\d+(?:\.\d+)?)\s?(million|billion|M|B|k|K)/i;
     const fundingResults = response
         .map((result) => {
-            const { Title, Link, Snippet, PageMap } = result;
+            const { Title, Link, Snippet, PageMap} = result;
 
             // Combine fields to search for funding information
             const content = [Title, Snippet, PageMap?.metatags?.[0]?.["og:description"]]
@@ -71,7 +72,7 @@ const parseFundingAmounts = (response) => {
                     Title,
                     Link,
                     Snippet,
-                    FundingAmount: `$${normalizedAmount.toLocaleString()}`,
+                    FundingAmount: `$${normalizedAmount.toLocaleString()}`
                 };
             }
 
@@ -102,10 +103,11 @@ const calculateFundingScore = (fundingAmount) => {
     }
 };
 
+
+
 module.exports = {
     saveToExcel,
     calculateFundingScore,
     sendGoogleSearchResponse,
-    parseFundingAmounts,
-
+    parseFundingAmounts
 };
