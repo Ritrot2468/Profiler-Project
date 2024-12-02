@@ -22,7 +22,7 @@ const segmentScoreMap = {
     "unclassified": 0
 };
 
-router.get('/search/:query', async (req, res) => {
+router.get('search/:query', async (req, res) => {
     const query = req.params.query;
 
     try {
@@ -32,7 +32,7 @@ router.get('/search/:query', async (req, res) => {
         res.status(500).json({ error: "An unexpected error occurred" });
     }
 })
-router.get('/search/:accountName', async (req, res) => {
+router.get('search/:accountName', async (req, res) => {
     const { accountName } = req.params;
     const { productCode, segment } = req.query;
 
@@ -57,7 +57,7 @@ router.get("/", (req, res) => {
     res.send("Welcome to the Search API! Use /search/:accountName to perform a search.");
 });
 
-router.post("/chat", async (req, res) => {
+router.post("chat", async (req, res) => {
 
     const {prompt} = req.body;
     console.log(prompt)
