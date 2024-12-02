@@ -8,31 +8,17 @@ const {sendDataToOpenAI, queryOpenAI} = require("./openai");
 
 const router = express.Router();
 
-
-const filePath = "product_scores.json";
-const productScores = JSON.parse(fs.readFileSync(filePath, "utf-8"));
-const segmentScoreMap = {
-    ACAD: 1,
-    BTCH: 10,
-    APPL: 2,
-    DX: 10,
-    HOSP: 2,
-    REF: 10,
-    "LIFE SCI": 2,
-    "unclassified": 0
-};
-
-router.get('search/:query', async (req, res) => {
+router.get('/search/:query', async (req, res) => {
     const query = req.params.query;
 
     try {
-        const response = await sendGoogleSearchResponse(query);
+        const response = sendGoogleSearchResponse(query);
         res.status(200).json(response);
     } catch (err) {
         res.status(500).json({ error: "An unexpected error occurred" });
     }
 })
-router.get('search/:accountName', async (req, res) => {
+router.get('/search/:accountName', async (req, res) => {
     const { accountName } = req.params;
     const { productCode, segment } = req.query;
 
@@ -57,7 +43,7 @@ router.get("/", (req, res) => {
     res.send("Welcome to the Search API! Use /search/:accountName to perform a search.");
 });
 
-router.post("chat", async (req, res) => {
+router.post("/chat", async (req, res) => {
 
     const {prompt} = req.body;
     console.log(prompt)
