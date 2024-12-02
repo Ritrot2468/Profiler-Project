@@ -16,7 +16,7 @@ const sendGoogleSearchResponse = async (query) => {
     )}&num=7&key=${API_KEY}&cx=${SEARCH_ENGINE_ID}`;
     try {
         const response = await axios.get(url );
-        console.log(response)
+       // console.log(response)
         const data = response.data;
 
         if (!data.items) {
@@ -25,7 +25,9 @@ const sendGoogleSearchResponse = async (query) => {
         }
 
         // Parse and return results
-        return parseSearchResults(data.items);
+        const result = parseSearchResults(data.items);
+        //console.log(result)
+        return result;
     } catch (error) {
         console.error("Error during API request:", error.message);
         throw new Error("Failed to fetch data from Google API.");
@@ -33,6 +35,7 @@ const sendGoogleSearchResponse = async (query) => {
 };
 
 const parseSearchResults = (items) => {
+   // console.log(items)
     return items.map((item) => ({
         Title: item.title || "No Title",
         Link: item.link || "No Link",
@@ -42,6 +45,7 @@ const parseSearchResults = (items) => {
 };
 
 const parseFundingAmounts = (response) => {
+    console.log("fUNDING", response)
     if (!response) {
         console.error("Invalid response format.");
         return [];
@@ -59,6 +63,7 @@ const parseFundingAmounts = (response) => {
  */
 const extractFundingDetails = (result, regex) => {
     const { Title, Link, Snippet, PageMap } = result;
+    console.log(result)
     const content = [Title, Snippet, PageMap?.metatags?.[0]?.["og:description"]]
         .filter(Boolean)
         .join(" ");
@@ -67,7 +72,7 @@ const extractFundingDetails = (result, regex) => {
     if (match) {
         const [fullMatch, amount, multiplier] = match;
         const normalizedAmount = normalizeFundingAmount(amount, multiplier);
-
+        console.log(Title, Link, Snippet, normalizedAmount )
         return { Title, Link, Snippet, FundingAmount: normalizedAmount };
     }
     return null;
@@ -109,8 +114,11 @@ const calculateFundingScore = (fundingAmount) => {
     }
 };
 
-async function parseAndSaveFundingAmounts(response, accountName, productCode, segment, gptResponse) {
+async function parseAndSaveFundingAmounts(accountName, productCode, segment) {
+    const response = await sendGoogleSearchResponse(accountName)
+    console.log("Calling parseFundingAmounts with response:", response);  // Log before the call
     const fundingResults = parseFundingAmounts(response);
+    console.log("Funding Results:", fundingResults)
     const uniqueFundingAmounts = getUniqueFundingAmounts(fundingResults);
     const fundingAmount = calculateTotalFunding(uniqueFundingAmounts);
     const fundingScore = calculateFundingScore(fundingAmount);
@@ -123,7 +131,6 @@ async function parseAndSaveFundingAmounts(response, accountName, productCode, se
 
     const accountData = createAccountData(
         accountName, productCode, segment, fundingAmount, productScore, segmentScore, fundingScore, totalScore, priority,
-        gptResponse
     );
 
     const outputFilePath = `${accountName}_search_results.xlsx`;
@@ -198,7 +205,7 @@ function determinePriority(totalScore) {
  * Create data object for the account
  * @returns {object} - Complete account data for saving
  */
-function createAccountData(accountName, productCode, segment, fundingAmount, productScore, segmentScore, fundingScore, totalScore, priority, gptResponse) {
+function createAccountData(accountName, productCode, segment, fundingAmount, productScore, segmentScore, fundingScore, totalScore, priority) {
     return {
         account_name: accountName,
         product_or_part_number: productCode,
@@ -209,7 +216,7 @@ function createAccountData(accountName, productCode, segment, fundingAmount, pro
         funding_score: fundingScore,
         total_score: totalScore,
         priority,
-        gptResponse: gptResponse
+        // gptResponse: gptResponse
     };
 }
 

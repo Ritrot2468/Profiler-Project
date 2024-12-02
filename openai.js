@@ -48,6 +48,7 @@ const data = [ /* your JSON data here */ ];
 
 // Function to send data to OpenAI
 async function sendDataToOpenAI(data) {
+    console.log(data)
     const formattedContent = data.map((item, index) => {
         return `Entry ${index + 1}:\nTitle: ${item.Title}\nLink: ${item.Link}\nSnippet: ${item.Snippet}`;
     }).join('\n\n');

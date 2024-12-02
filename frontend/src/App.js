@@ -40,7 +40,7 @@ function App() {
         `${BACKEND_URL}/search/${encodeURIComponent(accountName)}?productCode=${encodeURIComponent(
           productCode)}&segment=${encodeURIComponent(segment)}`
       );
-
+      console.log(response.data)
       setResults([response.data]);
     } catch (err) {
       setError("Failed to fetch results. Please try again.");
@@ -92,7 +92,7 @@ function App() {
               <h2>{result.account_name}</h2>
               <p>Product Code: {result.product_or_part_number}</p>
               <p>Segment: {result.segment}</p>
-              <p>Funding Amount: ${result.funding_amount.toLocaleString()} Million </p>
+              <p>Funding Amount: ${result.funding_amount} </p>
               <p>Product Score: {result.product_score}</p>
               <p>Segment Score: {result.segment_score}</p>
               <p>Funding Score: {result.funding_score}</p>
