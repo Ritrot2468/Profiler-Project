@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 import "./App.css";
+import Chatbot from "./ChatBot";
 
 // Define the segmentScoreMap
 const segmentScoreMap = {
@@ -39,7 +40,8 @@ function App() {
         `${BACKEND_URL}/search/${encodeURIComponent(accountName)}?productCode=${encodeURIComponent(
           productCode)}&segment=${encodeURIComponent(segment)}`
       );
-      setResults([response.data]); // Wrap in array for consistent display
+
+      setResults([response.data]);
     } catch (err) {
       setError("Failed to fetch results. Please try again.");
     } finally {
@@ -96,9 +98,11 @@ function App() {
               <p>Funding Score: {result.funding_score}</p>
               <p>Total Score: {result.total_score}</p>
               <p>Priority: {result.priority}</p>
+              <p>Chatbot Response: {result.gptResponse}</p>
             </div>
           ))}
         </div>
+        <Chatbot></Chatbot>
       </header>
     </div>
   );

@@ -56,6 +56,7 @@ export type Account = {
     }
   }
 
+
   export async function fetchFundingData(accountName: string, productCode: string, acctSegment: string): Promise<any> {
     try {
       const response = await fetch(`${BACKEND_URL}/search/${encodeURIComponent(accountName)}?productCode=${encodeURIComponent(
@@ -64,7 +65,7 @@ export type Account = {
       
       return response.json();
     } catch (error) {
-      throw new Error(`Error fetching funding amount for ${accountName}:`, error);
+      throw new Error(`Error fetching funding amount for ${accountName}:`);
     }
   }
 
