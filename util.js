@@ -209,7 +209,7 @@ function createAccountData(accountName, productCode, segment, fundingAmount, pro
         funding_score: fundingScore,
         total_score: totalScore,
         priority,
-        gptResponse
+        gptResponse: gptResponse
     };
 }
 
