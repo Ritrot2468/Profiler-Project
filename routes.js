@@ -1,18 +1,32 @@
 // routes.js
 const express = require("express");
-const { calculateFundingScore, saveToExcel, sendGoogleSearchResponse, parseFundingAmounts, parseAndSaveFundingAmounts} = require("./util");
+const { calculateFundingScore, saveToExcel, sendGoogleSearchResponse, parseFundingAmounts } = require("./util");
 const fs = require("fs");
+const {queryOpenAI} = require("./openai");
 const axios = require("axios");
 const {BACKEND_URL} = require("./config");
-const {sendDataToOpenAI, queryOpenAI} = require("./openai");
 
 const router = express.Router();
+
+
+const filePath = "product_scores.json";
+const productScores = JSON.parse(fs.readFileSync(filePath, "utf-8"));
+const segmentScoreMap = {
+    ACAD: 1,
+    BTCH: 10,
+    APPL: 2,
+    DX: 10,
+    HOSP: 2,
+    REF: 10,
+    "LIFE SCI": 2,
+    "unclassified": 0
+};
 
 router.get('/search/:query', async (req, res) => {
     const query = req.params.query;
 
     try {
-        const response = sendGoogleSearchResponse(query);
+        const response = await sendGoogleSearchResponse(query);
         res.status(200).json(response);
     } catch (err) {
         res.status(500).json({ error: "An unexpected error occurred" });
@@ -27,11 +41,45 @@ router.get('/search/:accountName', async (req, res) => {
     }
 
     try {
-       //  const response = sendGoogleSearchResponse(accountName);
-       // console.log("Google response", response)
-       //  // const gptResponse = await sendDataToOpenAI(response);
-        // console.log(gptResponse)
-        const accountData = await parseAndSaveFundingAmounts(accountName, productCode, segment);
+        const response = await sendGoogleSearchResponse(accountName);
+        const fundingResults = parseFundingAmounts(response);
+        const uniqueFundingAmounts = new Set(
+            fundingResults.map((result) => {
+                const parsedAmount = parseFloat(result.FundingAmount.replace(/[$,]/g, ""));
+                return parsedAmount;
+            })
+        );
+
+        const fundingAmount = Array.from(uniqueFundingAmounts).reduce((sum, amount) => sum + amount, 0);
+        const fundingScore = calculateFundingScore(fundingAmount);
+
+        // search for product score
+        const productScore =
+            productScores.find(
+                (ps) =>
+                    ps.product === productCode || ps.part_number === productCode
+            )?.product_score || 0;
+
+        const segmentScore = segmentScoreMap[segment] || 0;
+
+        const totalScore = productScore + segmentScore + fundingScore;
+        const priority = totalScore >= 12 ? "Multiple Contacts" : "Single Contact";
+
+        const accountData = {
+            account_name: accountName,
+            product_or_part_number: productCode,
+            segment,
+            funding_amount: fundingAmount,
+            product_score: productScore,
+            segment_score: segmentScore,
+            funding_score: fundingScore,
+            total_score: totalScore,
+            priority,
+            gptResponse: gptResponse.data.text
+        };
+        const outputFilePath = `${accountName}_search_results.xlsx`;
+        saveToExcel(response, outputFilePath);
+
         res.status(200).json(accountData);
     } catch (error) {
         console.error("Error processing request:", error.message);
