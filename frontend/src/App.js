@@ -41,7 +41,6 @@ function App() {
           productCode)}&segment=${encodeURIComponent(segment)}`
       );
 
-      //const chatResp = await axios.post(`${BACKEND_URL}/search/`, { prompt: response.data.text });
       setResults([response.data]);
     } catch (err) {
       setError("Failed to fetch results. Please try again.");
