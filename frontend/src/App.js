@@ -15,6 +15,7 @@ const segmentScoreMap = {
   unclassified: 0,
 };
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
+//const BACKEND_URL = "http://localhost:5000"
 //console.log("BACKEND URL:", BACKEND_URL)
 
 function App() {
@@ -40,7 +41,7 @@ function App() {
         `${BACKEND_URL}/search/${encodeURIComponent(accountName)}?productCode=${encodeURIComponent(
           productCode)}&segment=${encodeURIComponent(segment)}`
       );
-      console.log(response.data)
+      console.log(response)
       setResults([response.data]);
     } catch (err) {
       setError("Failed to fetch results. Please try again.");

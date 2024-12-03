@@ -47,13 +47,13 @@ async function queryOpenAI(prompt) {
 const data = [ /* your JSON data here */ ];
 
 // Function to send data to OpenAI
-async function sendDataToOpenAI(data) {
-    console.log(data)
+async function sendDataToOpenAI(data, accountName) {
+    //console.log(data)
     const formattedContent = data.map((item, index) => {
         return `Entry ${index + 1}:\nTitle: ${item.Title}\nLink: ${item.Link}\nSnippet: ${item.Snippet}`;
     }).join('\n\n');
 
-    console.log("formattedContent: ", formattedContent)
+    //console.log("formattedContent: ", formattedContent)
 
     const apiResponse = await fetch('https://api.openai.com/v1/chat/completions', {
         method: 'POST',
@@ -64,8 +64,8 @@ async function sendDataToOpenAI(data) {
         body: JSON.stringify({
             model: "gpt-4",
             messages: [
-                { role: "system", content: "You are an assistant that summarizes web search results." },
-                { role: "user", content: `Here is a set of web search results. Please summarize their main themes:\n\n${formattedContent}` }
+                { role: "system", content: "You are an assistant that calculates funding data." },
+                { role: "user", content: `Please summarize the funding amounts for ${accountName} :\n\n${formattedContent}` }
             ]
         })
     });
