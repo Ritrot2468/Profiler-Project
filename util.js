@@ -1,9 +1,23 @@
 // utils.js
-const xlsx = require("xlsx");
 const API_KEY = process.env.GOOGLE_API_KEY;
 const SEARCH_ENGINE_ID = process.env.SEARCH_ENGINE_ID;
 const axios = require("axios");
 const {BACKEND_URL} = require("./config");
+const fs = require('fs')
+const {sendDataToOpenAI} = require("./openai");
+
+const filePath = 'product_scores.json';
+const productScores = JSON.parse(fs.readFileSync(filePath, 'utf-8'));
+const segmentScoreMap = {
+    ACAD: 1,
+    BTCH: 10,
+    APPL: 2,
+    DX: 10,
+    HOSP: 2,
+    REF: 10,
+    "LIFE SCI": 2,
+};
+
 /**
  * Fetches and parses Google Custom Search API response
  * @param {string} query - Search query
@@ -15,8 +29,8 @@ const sendGoogleSearchResponse = async (query) => {
         refinedQuery
     )}&num=7&key=${API_KEY}&cx=${SEARCH_ENGINE_ID}`;
     try {
-        const response = await axios.get(url );
-        console.log(response)
+        const response = await axios.get(url);
+       // console.log(response)
         const data = response.data;
 
         if (!data.items) {
@@ -33,6 +47,7 @@ const sendGoogleSearchResponse = async (query) => {
 };
 
 const parseSearchResults = (items) => {
+   // console.log(items)
     return items.map((item) => ({
         Title: item.title || "No Title",
         Link: item.link || "No Link",
@@ -42,6 +57,7 @@ const parseSearchResults = (items) => {
 };
 
 const parseFundingAmounts = (response) => {
+    console.log("fUNDING", response)
     if (!response) {
         console.error("Invalid response format.");
         return [];
@@ -59,6 +75,7 @@ const parseFundingAmounts = (response) => {
  */
 const extractFundingDetails = (result, regex) => {
     const { Title, Link, Snippet, PageMap } = result;
+    //console.log(result)
     const content = [Title, Snippet, PageMap?.metatags?.[0]?.["og:description"]]
         .filter(Boolean)
         .join(" ");
@@ -67,7 +84,7 @@ const extractFundingDetails = (result, regex) => {
     if (match) {
         const [fullMatch, amount, multiplier] = match;
         const normalizedAmount = normalizeFundingAmount(amount, multiplier);
-
+        console.log(Title, Link, Snippet, normalizedAmount )
         return { Title, Link, Snippet, FundingAmount: normalizedAmount };
     }
     return null;
@@ -90,13 +107,13 @@ const normalizeFundingAmount = (amount, multiplier) => {
 };
 
 // Utility function for saving data to Excel
-const saveToExcel = (data, outputPath) => {
-    const worksheet = xlsx.utils.json_to_sheet(data);
-    const workbook = xlsx.utils.book_new();
-    xlsx.utils.book_append_sheet(workbook, worksheet, "Search Results");
-    xlsx.writeFile(workbook, outputPath);
-    console.log(`Data saved to ${outputPath}`);
-};
+// const saveToExcel = (data, outputPath) => {
+//     const worksheet = xlsx.utils.json_to_sheet(data);
+//     const workbook = xlsx.utils.book_new();
+//     xlsx.utils.book_append_sheet(workbook, worksheet, "Search Results");
+//     xlsx.writeFile(workbook, outputPath);
+//     console.log(`Data saved to ${outputPath}`);
+// };
 
 // Utility function to calculate funding score
 const calculateFundingScore = (fundingAmount) => {
@@ -109,8 +126,13 @@ const calculateFundingScore = (fundingAmount) => {
     }
 };
 
-async function parseAndSaveFundingAmounts(response, accountName, productCode, segment, gptResponse) {
-    const fundingResults = parseFundingAmounts(response);
+async function parseAndSaveFundingAmounts(accountName, productCode, segment) {
+    const response = await sendGoogleSearchResponse(accountName)
+    const gptResponse = await sendDataToOpenAI(response)
+    console.log("Calling parseFundingAmounts with response:", response);  // Log before the call
+    console.log("GPT Response: ", gptResponse)
+    const fundingResults = parseFundingAmounts(response, accountName);
+    console.log("Funding Results:", fundingResults)
     const uniqueFundingAmounts = getUniqueFundingAmounts(fundingResults);
     const fundingAmount = calculateTotalFunding(uniqueFundingAmounts);
     const fundingScore = calculateFundingScore(fundingAmount);
@@ -123,11 +145,12 @@ async function parseAndSaveFundingAmounts(response, accountName, productCode, se
 
     const accountData = createAccountData(
         accountName, productCode, segment, fundingAmount, productScore, segmentScore, fundingScore, totalScore, priority,
-        gptResponse
+        gptResponse.choices[0].message.content
     );
+    console.log(accountData)
 
     const outputFilePath = `${accountName}_search_results.xlsx`;
-    saveToExcel(accountData, outputFilePath);
+    //saveToExcel(accountData, outputFilePath);
     return accountData;
 }
 
@@ -139,7 +162,7 @@ async function parseAndSaveFundingAmounts(response, accountName, productCode, se
 function getUniqueFundingAmounts(fundingResults) {
     return new Set(
         fundingResults.map(result => {
-            const parsedAmount = parseFloat(result.FundingAmount.replace(/[$,]/g, ""));
+            const parsedAmount = parseFloat(result.FundingAmount);
             return parsedAmount;
         })
     );
@@ -198,7 +221,8 @@ function determinePriority(totalScore) {
  * Create data object for the account
  * @returns {object} - Complete account data for saving
  */
-function createAccountData(accountName, productCode, segment, fundingAmount, productScore, segmentScore, fundingScore, totalScore, priority, gptResponse) {
+function createAccountData(accountName, productCode, segment, fundingAmount, productScore, segmentScore, fundingScore, totalScore, priority,
+                           gptResponse) {
     return {
         account_name: accountName,
         product_or_part_number: productCode,
@@ -214,7 +238,7 @@ function createAccountData(accountName, productCode, segment, fundingAmount, pro
 }
 
 module.exports = {
-    saveToExcel,
+    //saveToExcel,
     calculateFundingScore,
     sendGoogleSearchResponse,
     parseFundingAmounts,

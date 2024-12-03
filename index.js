@@ -14,6 +14,7 @@ app.use(cors({
     allowedHeaders: ["Content-Type", "Authorization"],
 }));
 
+app.options('*', cors());
 app.use('/', router);
 
 app.listen(config.PORT, () => {
