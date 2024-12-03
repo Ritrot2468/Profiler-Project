@@ -39,7 +39,7 @@ function App() {
     try {
       const response = await axios.get(
         `${BACKEND_URL}/search/${encodeURIComponent(accountName)}?productCode=${encodeURIComponent(
-          productCode)}&segment=${encodeURIComponent(segment)}`
+          productCode.trim())}&segment=${encodeURIComponent(segment)}`
       );
       console.log(response)
       setResults([response.data]);
