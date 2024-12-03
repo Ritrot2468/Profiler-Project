@@ -18,7 +18,7 @@ async function queryOpenAI(prompt) {
             model: 'gpt-4o',
             messages: [ {role: "system", content: "You are an assistant that summarizes funding data for the given account."},
                 { role: 'user', content: prompt }],
-            temperature: 0.9,
+            temperature: 0.4,
         });
 
         let fullResponse = ""; // Accumulate the response text
