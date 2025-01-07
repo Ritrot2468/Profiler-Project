@@ -93,7 +93,6 @@ function App() {
               <h2>{result.account_name}</h2>
               <p>Product Code: {result.product_or_part_number}</p>
               <p>Segment: {result.segment}</p>
-             <!-- <p>Funding Amount: ${result.funding_amount} </p> -->
               <p>Product Score: {result.product_score}</p>
               <p>Segment Score: {result.segment_score}</p>
               <p>Funding Score: {result.funding_score}</p>
