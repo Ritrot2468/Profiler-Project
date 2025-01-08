@@ -127,9 +127,11 @@ const calculateFundingScore = (fundingAmount) => {
 };
 
 async function parseAndSaveFundingAmounts(accountName, productCode, segment) {
-    const response = sendGoogleSearchResponse(accountName)
-    const gptResponse = await sendDataToOpenAI(response)
+    console.log("can parse here")
+    const response = await sendGoogleSearchResponse(accountName)
     console.log("Calling parseFundingAmounts with response:", response);  // Log before the call
+    const gptResponse = await sendDataToOpenAI(response)
+
     console.log("GPT Response: ", gptResponse)
     const fundingResults = parseFundingAmounts(response, accountName);
     console.log("Funding Results:", fundingResults)
