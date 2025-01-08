@@ -6,7 +6,7 @@ const {queryOpenAI} = require("./openai");
 const router = express.Router();
 
 
-router.get('search/:accountName', async (req, res) => {
+router.get('/search/:accountName', async (req, res) => {
     const { accountName } = req.params;
     const { productCode, segment } = req.query;
 
