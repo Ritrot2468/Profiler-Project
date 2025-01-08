@@ -127,7 +127,7 @@ const calculateFundingScore = (fundingAmount) => {
 };
 
 async function parseAndSaveFundingAmounts(accountName, productCode, segment) {
-    const response = await sendGoogleSearchResponse(accountName)
+    const response = sendGoogleSearchResponse(accountName)
     const gptResponse = await sendDataToOpenAI(response)
     console.log("Calling parseFundingAmounts with response:", response);  // Log before the call
     console.log("GPT Response: ", gptResponse)
@@ -141,16 +141,16 @@ async function parseAndSaveFundingAmounts(accountName, productCode, segment) {
     const segmentScore = getSegmentScore(segment);
 
     const totalScore = calculateTotalScore(productScore, segmentScore, fundingScore);
-    const totalScoreNoFund = productScore + segmentScore;
-    const priority = determinePriority(totalScore);
+    const totalScoreNoFund = totalScore - fundingScore;
+   // const priority = determinePriority(totalScore);
 
     const accountData = createAccountData(
-        accountName, productCode, segment, fundingAmount, productScore, segmentScore, fundingScore, totalScore, totalScoreNoFund, priority,
+        accountName, productCode, segment, fundingAmount, productScore, segmentScore, fundingScore, totalScore, totalScoreNoFund,
         gptResponse.choices[0].message.content
     );
     console.log(accountData)
 
-    const outputFilePath = `${accountName}_search_results.xlsx`;
+    //const outputFilePath = `${accountName}_search_results.xlsx`;
     //saveToExcel(accountData, outputFilePath);
     return accountData;
 }

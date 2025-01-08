@@ -150,7 +150,7 @@ function App() {
                     <strong>Segment Score:</strong> {result.segment_score}
                   </p>
                   <p>
-                    <strong>Funding Score:</strong> {result.funding_score}
+                    <strong>Predicted Funding Score:</strong> {result.funding_score}
                   </p>
 
                   {/* Total Scores Side by Side */}

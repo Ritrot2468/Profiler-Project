@@ -1,10 +1,7 @@
 // routes.js
 const express = require("express");
-const { calculateFundingScore, saveToExcel, sendGoogleSearchResponse, parseFundingAmounts, parseAndSaveFundingAmounts} = require("./util");
-const fs = require("fs");
+const {parseAndSaveFundingAmounts} = require("./util");
 const {queryOpenAI} = require("./openai");
-const axios = require("axios");
-const {BACKEND_URL} = require("./config");
 
 const router = express.Router();
 
