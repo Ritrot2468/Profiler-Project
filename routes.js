@@ -15,6 +15,7 @@ router.get('search/:accountName', async (req, res) => {
     }
 
     try {
+        console.log("about to request")
         const accountData = await parseAndSaveFundingAmounts(accountName,productCode,segment)
         res.status(200).json(accountData);
     } catch (error) {
