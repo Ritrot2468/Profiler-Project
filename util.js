@@ -130,7 +130,8 @@ async function parseAndSaveFundingAmounts(accountName, productCode, segment) {
     console.log("can parse here")
     const response = await sendGoogleSearchResponse(accountName)
     console.log("Calling parseFundingAmounts with response:", response);  // Log before the call
-    const gptResponse = await sendDataToOpenAI(response)
+    // TODO: May have to alter now that gpt-40 web search is done _> sending accountName instead of response
+    const gptResponse = await sendDataToOpenAI(accountName)
 
     console.log("GPT Response: ", gptResponse)
     const fundingResults = parseFundingAmounts(response, accountName);
