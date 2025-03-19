@@ -1,5 +1,6 @@
 
 const dotenv = require("dotenv");
+
 const fetch = require('node-fetch');
 
 const OpenAI = require('openai');
@@ -18,24 +19,22 @@ async function queryOpenAI(prompt) {
             model: 'gpt-4o-search-preview',
             web_search_options: {},
             messages:  [{role: "user", content: "You are an assistant that summarizes relevant funding data and research news for the company named ${prompt}"},
-                ],
-            temperature: 0.4,
+                ]
         });
 
-        let fullResponse = ""; // Accumulate the response text
+        let fullResponse = ""; 
 
-        // Listen for content events
         stream.on('content', (delta) => {
-            process.stdout.write(delta); // Optionally log each chunk
+            //process.stdout.write(delta); // Optionally log each chunk
             fullResponse += delta; // Append each chunk to the full response
         });
 
-        // Wait for the final chat completion object
         const chatCompletion = await stream.finalChatCompletion();
 
         console.log("\nFinal Response:", fullResponse);
+        console.log("\nCompletion:", chatCompletion.choices[0].message.content);
         return {
-            text: fullResponse, // Combined text from the stream
+            text: fullResponse,
             completion: chatCompletion, // Full structured response object
         };
     } catch (error) {
@@ -48,30 +47,31 @@ async function queryOpenAI(prompt) {
 const data = [ /* your JSON data here */ ];
 
 // Function to send data to OpenAI
-async function sendDataToOpenAI(data, accountName) {
-    //console.log(data)
-    const formattedContent = data.map((item, index) => {
-        return `Entry ${index + 1}:\nTitle: ${item.Title}\nLink: ${item.Link}\nSnippet: ${item.Snippet}`;
-    }).join('\n\n');
+async function sendDataToOpenAI(accountName) {
+    
+    console.log(`Account Name: ${accountName}`);
+    // const formattedContent = data.map((item, index) => {
+    //     return `Entry ${index + 1}:\nTitle: ${item.Title}\nLink: ${item.Link}\nSnippet: ${item.Snippet}`;
+    // }).join('\n\n');
 
-    //console.log("formattedContent: ", formattedContent)
+    //console.log("formattedContent: ", formattedContent);
 
-    const apiResponse = await fetch('https://api.openai.com/v1/chat/completions', {
-        method: 'POST',
-        headers: {
-            'Authorization': `Bearer ${API_KEY}`,
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-            model: "gpt-4",
-            messages: [
-                { role: "system", content: "You are an assistant that calculates funding data." },
-                { role: "user", content: `Please summarize the funding amounts for ${accountName} :\n\n${formattedContent}` }
-            ]
-        })
-    });
+    // const apiResponse = await fetch('https://api.openai.com/v1/chat/completions', {
+    //     method: 'POST',
+    //     headers: {
+    //         'Authorization': `Bearer ${API_KEY}`,
+    //         'Content-Type': 'application/json',
+    //     },
+    //     body: JSON.stringify({
+    //         model: "gpt-4",
+    //         messages: [
+    //             { role: "system", content: "You are an assistant that calculates funding data." },
+    //             { role: "user", content: `Please summarize the funding amounts for ${accountName} :\n\n${formattedContent}` }
+    //         ]
+    //     })
+    // });
 
-    return await apiResponse.json();
+    return await queryOpenAI(accountName);
 }
 //
 // sendDataToOpenAI(

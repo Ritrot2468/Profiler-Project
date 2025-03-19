@@ -63,8 +63,7 @@ const parseFundingAmounts = (response) => {
         return [];
     }
 
-    const fundingRegex = /[$£](\d+(?:\.\d+)?)\s?(million|billion|M|B|k|K)/i;
-    return response.map((result) => extractFundingDetails(result, fundingRegex)).filter(Boolean);
+    return response.map((result) => extractFundingDetails(result)).filter(Boolean);
 };
 
 /**
@@ -73,21 +72,42 @@ const parseFundingAmounts = (response) => {
  * @param {RegExp} regex - Regular expression for finding funding amounts
  * @returns {Object|null} Parsed funding details or null if none found
  */
-const extractFundingDetails = (result, regex) => {
+const extractFundingDetails = (result) => {
     const { Title, Link, Snippet, PageMap } = result;
     //console.log(result)
     const content = [Title, Snippet, PageMap?.metatags?.[0]?.["og:description"]]
         .filter(Boolean)
         .join(" ");
+        const fundingRegex = /([$£€¥]|USD|GBP|EUR)\s?(\d{1,3}(?:,\d{3})*(?:\.\d+)?)[\s-]*(\b(million|billion|thousand|mn|bn|M|B|k|K)\b)/gi;
+        const matches = [...content.matchAll(fundingRegex)];
+        
+        if (matches.length === 0) return null;
+    
+        let maxFunding = 0;
+    let bestMatch = null;
 
-    const match = content.match(regex);
-    if (match) {
-        const [fullMatch, amount, multiplier] = match;
-        const normalizedAmount = normalizeFundingAmount(amount, multiplier);
-        console.log(Title, Link, Snippet, normalizedAmount )
-        return { Title, Link, Snippet, FundingAmount: normalizedAmount };
+    for (const match of matches) {
+        try {
+            const [_, currency, amount, , multiplier] = match;
+            const funding = normalizeFundingAmount(amount, multiplier, currency);
+            
+            if (funding > maxFunding) {
+                maxFunding = funding;
+                bestMatch = { 
+                    Title, 
+                    Link, 
+                    Snippet, 
+                    FundingAmount: funding,
+                    Currency: currency.replace(/USD|GBP|EUR/, match => CURRENCY_SYMBOLS[match] || match)
+                };
+            }
+        } catch (e) {
+            console.error('Error processing funding:', e);
+        }
     }
-    return null;
+
+    return bestMatch;
+    
 };
 
 /**
@@ -96,25 +116,45 @@ const extractFundingDetails = (result, regex) => {
  * @param {string} multiplier - The multiplier (e.g., million, billion)
  * @returns {number} Normalized funding amount
  */
-const normalizeFundingAmount = (amount, multiplier) => {
-    let normalizedAmount = parseFloat(amount);
-    if (multiplier.toLowerCase().includes("million") || multiplier.toLowerCase() === "M") {
-        normalizedAmount *= 1e6;
-    } else if (multiplier.toLowerCase().includes("billion") || multiplier.toLowerCase() === "B") {
-        normalizedAmount *= 1e9;
-    }
-    return normalizedAmount;
+const normalizeFundingAmount = (amount, multiplier, currency) => {
+    // Handle currency conversions (simplified example)
+    const CURRENCY_RATES = { 
+        "£": 1.22,  // GBP to USD
+        "€": 1.08,  // EUR to USD
+        "¥": 0.0077 // JPY to USD
+    };
+
+    // Clean numerical value
+    const cleanedAmount = parseFloat(amount.replace(/,/g, ''));
+    
+    // Apply multiplier
+    const MULTIPLIERS = {
+        thousand: 1e3,
+        k: 1e3,
+        million: 1e6,
+        m: 1e6,
+        mn: 1e6,
+        billion: 1e9,
+        b: 1e9,
+        bn: 1e9
+    };
+
+    const lowerMultiplier = multiplier.toLowerCase();
+    const multiplierValue = MULTIPLIERS[lowerMultiplier] || 1;
+    
+    // Convert to USD if foreign currency
+    const currencySymbol = currency.replace(/[^$£€¥]/g, '');
+    const conversionRate = CURRENCY_RATES[currencySymbol] || 1;
+    
+    return cleanedAmount * multiplierValue * conversionRate;
 };
 
-// Utility function for saving data to Excel
-// const saveToExcel = (data, outputPath) => {
-//     const worksheet = xlsx.utils.json_to_sheet(data);
-//     const workbook = xlsx.utils.book_new();
-//     xlsx.utils.book_append_sheet(workbook, worksheet, "Search Results");
-//     xlsx.writeFile(workbook, outputPath);
-//     console.log(`Data saved to ${outputPath}`);
-// };
-
+// Optional: Currency symbol normalization
+const CURRENCY_SYMBOLS = {
+    USD: "$",
+    GBP: "£",
+    EUR: "€"
+};
 // Utility function to calculate funding score
 const calculateFundingScore = (fundingAmount) => {
     if (fundingAmount > 100_000_000) {
@@ -149,9 +189,9 @@ async function parseAndSaveFundingAmounts(accountName, productCode, segment) {
 
     const accountData = createAccountData(
         accountName, productCode, segment, fundingAmount, productScore, segmentScore, fundingScore, totalScore, totalScoreNoFund,
-        gptResponse.choices[0].message.content
+        gptResponse.completion.choices[0].message.content
     );
-    console.log(accountData)
+    console.log(`accountData: ${accountData}`);
 
     //const outputFilePath = `${accountName}_search_results.xlsx`;
     //saveToExcel(accountData, outputFilePath);
