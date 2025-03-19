@@ -177,6 +177,7 @@ async function parseAndSaveFundingAmounts(accountName, productCode, segment) {
     const fundingResults = parseFundingAmounts(response, accountName);
     console.log("Funding Results:", fundingResults)
     const uniqueFundingAmounts = getUniqueFundingAmounts(fundingResults);
+    console.log("Unique Funding Amounts: ", uniqueFundingAmounts);
     const fundingAmount = calculateTotalFunding(uniqueFundingAmounts);
     const fundingScore = calculateFundingScore(fundingAmount);
 
@@ -189,7 +190,7 @@ async function parseAndSaveFundingAmounts(accountName, productCode, segment) {
 
     const accountData = createAccountData(
         accountName, productCode, segment, fundingAmount, productScore, segmentScore, fundingScore, totalScore, totalScoreNoFund,
-        gptResponse.completion.choices[0].message.content
+        gptResponse.completion.choices[0].message.content, fundingResults
     );
     console.log(`accountData: ${accountData}`);
 
@@ -267,7 +268,7 @@ function determinePriority(totalScore) {
  */
 function createAccountData(accountName, productCode, segment, fundingAmount, productScore,
                            segmentScore, fundingScore, totalScore, totalScoreNoFund,
-                           gptResponse) {
+                           gptResponse, googleResponses) {
     return {
         account_name: accountName,
         product_or_part_number: productCode,
@@ -278,7 +279,8 @@ function createAccountData(accountName, productCode, segment, fundingAmount, pro
         funding_score: fundingScore,
         total_score: totalScore,
         total_score_no_fund: totalScoreNoFund,
-        gptResponse: gptResponse
+        gptResponse: gptResponse,
+        googleResponses: googleResponses
     };
 }
 

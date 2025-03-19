@@ -18,7 +18,7 @@ async function queryOpenAI(prompt) {
         const stream = await openai.beta.chat.completions.stream({
             model: 'gpt-4o-search-preview',
             web_search_options: {},
-            messages:  [{role: "user", content: "You are an assistant that summarizes relevant funding data and research news for the company named ${prompt}"},
+            messages:  [{role: "user", content: `You are an assistant that summarizes relevant funding data and research news for the company named ${prompt}`},
                 ]
         });
 
