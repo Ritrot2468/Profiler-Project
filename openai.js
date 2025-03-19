@@ -15,9 +15,10 @@ const openai = new OpenAI({
 async function queryOpenAI(prompt) {
     try {
         const stream = await openai.beta.chat.completions.stream({
-            model: 'gpt-4',
-            messages: [ {role: "system", content: "You are an assistant that summarizes funding data for the given account."},
-                { role: 'user', content: prompt }],
+            model: 'gpt-4o-search-preview',
+            web_search_options: {},
+            messages:  [{role: "user", content: "You are an assistant that summarizes relevant funding data and research news for the company named ${prompt}"},
+                ],
             temperature: 0.4,
         });
 
