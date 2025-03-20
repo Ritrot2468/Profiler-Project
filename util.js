@@ -30,15 +30,12 @@ const sendGoogleSearchResponse = async (query) => {
     )}&num=7&key=${API_KEY}&cx=${SEARCH_ENGINE_ID}`;
     try {
         const response = await axios.get(url);
-       // console.log(response)
         const data = response.data;
 
         if (!data.items) {
             console.log("No 'items' found in the response.");
             return [];
         }
-
-        // Parse and return results
         return parseSearchResults(data.items);
     } catch (error) {
         console.error("Error during API request:", error.message);
@@ -47,7 +44,6 @@ const sendGoogleSearchResponse = async (query) => {
 };
 
 const parseSearchResults = (items) => {
-   // console.log(items)
     return items.map((item) => ({
         Title: item.title || "No Title",
         Link: item.link || "No Link",
@@ -57,7 +53,6 @@ const parseSearchResults = (items) => {
 };
 
 const parseFundingAmounts = (response) => {
-    console.log("fUNDING", response)
     if (!response) {
         console.error("Invalid response format.");
         return [];
@@ -84,7 +79,7 @@ const extractFundingDetails = (result) => {
         if (matches.length === 0) return null;
     
         let maxFunding = 0;
-    let bestMatch = null;
+        let bestMatch = null;
 
     for (const match of matches) {
         try {
@@ -149,7 +144,6 @@ const normalizeFundingAmount = (amount, multiplier, currency) => {
     return cleanedAmount * multiplierValue * conversionRate;
 };
 
-// Optional: Currency symbol normalization
 const CURRENCY_SYMBOLS = {
     USD: "$",
     GBP: "£",

@@ -55,8 +55,8 @@ function App() {
       // Initialize each result with a selected_total_score field
       const fetchedResults = [response.data].map((result) => ({
         ...result,
-        selected_total_score: null, // Initially no score is selected
-        priority: "", // Initially no priority is set
+        selected_total_score: null, 
+        priority: "", 
       }));
 
       setResults(fetchedResults);
@@ -199,6 +199,10 @@ function App() {
 
                   <p>
                     <strong>Chatbot Response:</strong> {result.gptResponse}
+                  </p>
+
+                  <p>
+                    <strong>Google Response:</strong> {result.googleResponses}
                   </p>
                 </div>
             ))}
