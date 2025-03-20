@@ -180,11 +180,10 @@ async function parseAndSaveFundingAmounts(accountName, productCode, segment) {
 
     const totalScore = calculateTotalScore(productScore, segmentScore, fundingScore);
     const totalScoreNoFund = totalScore - fundingScore;
-   // const priority = determinePriority(totalScore);
 
     const accountData = createAccountData(
         accountName, productCode, segment, fundingAmount, productScore, segmentScore, fundingScore, totalScore, totalScoreNoFund,
-        gptResponse.completion.choices[0].message.content, fundingResults
+        gptResponse.text, fundingResults
     );
     console.log(`accountData: ${accountData}`);
 

@@ -153,6 +153,19 @@ function App() {
                     <strong>Predicted Funding Score:</strong> {result.funding_score}
                   </p>
 
+                  {result.googleResponses && result.googleResponses.length > 0 && (
+                    <div className="google-responses">
+                      <h3>Google Funding News</h3>
+                      {result.googleResponses.map((response, i) => (
+                        <div key={i} className="google-response-card">
+                          <h4><a href={response.Link} target="_blank" rel="noopener noreferrer">{response.Title}</a></h4>
+                          <p>{response.Snippet}</p>
+                          <p><strong>Funding Amount:</strong> ${response.FundingAmount.toLocaleString()}</p>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
                   {/* Total Scores Side by Side */}
                   <div className="total-scores">
                     <div className="total-score-option">
@@ -198,11 +211,7 @@ function App() {
                   )}
 
                   <p>
-                    <strong>Chatbot Response:</strong> {result.gptResponse}
-                  </p>
-
-                  <p>
-                    <strong>Google Response:</strong> {result.googleResponses}
+                    <strong>GPT Response:</strong> {result.gptResponse}
                   </p>
                 </div>
             ))}
