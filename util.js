@@ -183,7 +183,7 @@ async function parseAndSaveFundingAmounts(accountName, productCode, segment) {
 
     const accountData = createAccountData(
         accountName, productCode, segment, fundingAmount, productScore, segmentScore, fundingScore, totalScore, totalScoreNoFund,
-        gptResponse.text, fundingResults
+        gptResponse.completion.choices[0].message.content, fundingResults
     );
     console.log(`accountData: ${accountData}`);
 
