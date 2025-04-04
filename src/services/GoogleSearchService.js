@@ -1,6 +1,4 @@
-const {BACKEND_URL} = require("../config");
-const API_KEY = process.env.GOOGLE_API_KEY;
-const SEARCH_ENGINE_ID = process.env.SEARCH_ENGINE_ID;
+//const {BACKEND_URL} = require("../config");
 const axios = require("axios");   
 
 /**
@@ -9,7 +7,12 @@ const axios = require("axios");
  * @returns {Array} Parsed search results
  */
 class GoogleSearchService {
-    static async search(query) {
+    constructor(apiKey, searchEngineId) {
+        this.apiKey = apiKey;
+        this.searchEngineId = searchEngineId;
+    }
+
+    async search(query) {
         const refinedQuery = `'${query}' funding`;
         const url = `https://www.googleapis.com/customsearch/v1?q=${encodeURIComponent(
             refinedQuery
@@ -24,7 +27,7 @@ class GoogleSearchService {
         }
     }
 
-    static parseResults(items) {
+    parseResults(items) {
         return items.map((item) => ({
             Title: item.title || "No Title",
             Link: item.link || "No Link",
@@ -34,3 +37,5 @@ class GoogleSearchService {
     }
 }
 
+
+module.exports = GoogleSearchService;

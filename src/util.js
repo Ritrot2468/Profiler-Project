@@ -4,11 +4,14 @@ const ScoreCalculator = require("../helpers/ScoreCalculator");
 const AccountBuilder = require("../helpers/AccountBuilder");
 const { sendDataToOpenAI } = require("../services/OpenAIService");
 const config = require("../config");
+const API_KEY = process.env.GOOGLE_API_KEY;
+const SEARCH_ENGINE_ID = process.env.SEARCH_ENGINE_ID;
 
 
 
 
 async function parseAndSaveFundingAmounts(accountName, productCode, segment) {
+    const GoogleSearchService = GoogleSearchService(API_KEY, SEARCH_ENGINE_ID);
      const googleResults = await GoogleSearchService.search(accountName);
     const gptResponse = await sendDataToOpenAI(accountName);
     const fundingResults = FundingParser.extractAll(googleResults);
