@@ -1,29 +1,31 @@
 # Profiler
 
-Profiler is a web application that gathers user-provided product and company information, then uses Google Search and OpenAI APIs to generate a company summary, estimate funding, and assign a relevance score.
+**Profiler** is a web application that collects user-provided product and company information, then uses Google Search and OpenAI APIs to generate a company summary, estimate funding, and assign a relevance score.
 
-🔧 Tech Stack
-Frontend: React (TypeScript)
+---
 
-Backend: Node.js
+## 🔧 Tech Stack
 
-APIs: Google Search, OpenAI
+- **Frontend**: React (TypeScript)
+- **Backend**: Node.js
+- **APIs**: Google Search, OpenAI
+- **Deployment**: Vercel, Heroku
+- **Languages**: JavaScript, TypeScript, Python, HTML, CSS
 
-Deployment: Vercel, Heroku
+---
 
-Languages: JavaScript, TypeScript, Python, HTML, CSS
+## 🌐 Live Demo
 
-🌐 Live Demo
-Profiler Web App
+👉 [Try the App](https://profiler-1b6h3n1m5-ritrot2468s-projects.vercel.app/)
 
-🧠 Key Features
-Accepts product and company input from the user
+---
 
-Retrieves public data using Google Search
+## 🧠 Features
 
-Uses OpenAI to summarize company information
+- User input form for product and company details
+- Automatic data retrieval using Google Search
+- Summarized company profile with OpenAI
+- Estimated funding insight
+- Generates a custom Profiler Score
 
-Estimates company funding
-
-Generates a custom "Profiler Score"
-
+---
