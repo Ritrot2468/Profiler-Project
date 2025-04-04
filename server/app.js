@@ -1,22 +1,22 @@
-// index.js
+// server/app.js
 const express = require("express");
 const cors = require("cors");
-const config = require("./config");
 const router = require("./routes");
 
-config.validateConfig();
-
 const app = express();
+
+// Middleware
 app.use(express.json());
 app.use(cors({
-    origin: '*',
+    origin: "*",
     methods: ["GET", "POST"],
     allowedHeaders: ["Content-Type", "Authorization"],
 }));
 
-app.options('*', cors());
-app.use('/', router);
+// CORS pre-flight
+app.options("*", cors());
 
-app.listen(config.PORT, () => {
-    console.log(`Server is running on http://localhost:${config.PORT}`);
-});
+// Mount routes
+app.use("/", router);
+
+module.exports = app;
