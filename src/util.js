@@ -16,10 +16,10 @@ async function parseAndSaveFundingAmounts(accountName, productCode, segment) {
     //const GoogleSearchServiceClass = GoogleSearchService(API_KEY, SEARCH_ENGINE_ID);
     //console.log("started google search");
     const googleResults = await googleSearch.search(accountName);
-    //console.log("finished google search");
+    console.log("finished google search results", googleResults);
     const gptResponse = await sendDataToOpenAI(accountName);
     const fundingResults = FundingParser.extractAll(googleResults);
-
+    console.log("processed funding results", fundingResults);
     const fundingAmount = FundingParser.calculateTotalFunding(fundingResults);
     const fundingScore = ScoreCalculator.calculateFundingScore(fundingAmount);
     const productScore = ScoreCalculator.getProductScore(productCode);
@@ -36,7 +36,7 @@ async function parseAndSaveFundingAmounts(accountName, productCode, segment) {
         fundingScore,
         totalScore,
         gptText: gptResponse.completion.choices[0].message.content,
-        googleResults: fundingResults,
+        googleResults: googleResults,
     });
 }
 
