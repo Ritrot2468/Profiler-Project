@@ -1,6 +1,4 @@
 
-
-
 class FundingParser {
 
     //TODO: need to make more dynamic for changing currency rates

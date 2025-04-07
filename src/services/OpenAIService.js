@@ -1,12 +1,12 @@
 
 const dotenv = require("dotenv");
 const OpenAI = require('openai');
-
-dotenv.config();
+const config = require("../config");
 
 const openai = new OpenAI({
-    apiKey: process.env.OPENAI_API_KEY,
+    apiKey: config.OPENAI_API_KEY,
 });
+
 
 /**
  * Query OpenAI with a prompt and stream the completion.

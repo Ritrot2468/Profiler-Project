@@ -1,7 +1,7 @@
 // routes.js
 const express = require("express");
-const {parseAndSaveFundingAmounts} = require("./util");
-const {queryOpenAI} = require("./openai");
+const { parseAndSaveFundingAmounts } = require("../src/util");
+const { queryOpenAI } = require("../src/services/OpenAIService");
 
 const router = express.Router();
 

@@ -1,8 +1,8 @@
-const GoogleSearchService = require("../services/GoogleSearchService");
-const FundingParser = require("../helpers/FundingParser");
-const ScoreCalculator = require("../helpers/ScoreCalculator");
-const AccountBuilder = require("../helpers/AccountBuilder");
-const { sendDataToOpenAI } = require("../services/OpenAIService");
+const GoogleSearchService = require("../src/services/GoogleSearchService");
+const FundingParser = require("../src/helpers/FundingParser");
+const ScoreCalculator = require("../src/helpers/ScoreCalculator");
+const AccountBuilder = require("../src/helpers/AccountBuilder");
+const { sendDataToOpenAI } = require("../src/services/OpenAIService");
 const config = require("../config");
 //const API_KEY = process.env.GOOGLE_API_KEY;
 //const SEARCH_ENGINE_ID = process.env.SEARCH_ENGINE_ID;

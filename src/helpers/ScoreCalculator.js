@@ -1,3 +1,4 @@
+const fs = require("fs");
 const segmentScoreMap = {
     ACAD: 1,
     BTCH: 10,
@@ -8,7 +9,7 @@ const segmentScoreMap = {
     "LIFE SCI": 2,
 };
 
-const filePath = 'product_scores.json';
+const filePath = 'src/data/product_scores.json';
 const productScores = JSON.parse(fs.readFileSync(filePath, 'utf-8'));
 
 
