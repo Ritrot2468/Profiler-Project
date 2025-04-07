@@ -3,7 +3,8 @@ const FundingParser = require("../src/helpers/FundingParser");
 const ScoreCalculator = require("../src/helpers/ScoreCalculator");
 const AccountBuilder = require("../src/helpers/AccountBuilder");
 const { sendDataToOpenAI } = require("../src/services/OpenAIService");
-const config = require("../config");
+const config = require("../src/config");
+
 //const API_KEY = process.env.GOOGLE_API_KEY;
 //const SEARCH_ENGINE_ID = process.env.SEARCH_ENGINE_ID;
 

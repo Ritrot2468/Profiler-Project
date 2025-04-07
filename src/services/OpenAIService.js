@@ -1,5 +1,5 @@
 
-const dotenv = require("dotenv");
+//const dotenv = require("dotenv");
 const OpenAI = require('openai');
 const config = require("../config");
 
