@@ -160,7 +160,6 @@ function App() {
                         <div key={i} className="google-response-card">
                           <h4><a href={response.Link} target="_blank" rel="noopener noreferrer">{response.Title}</a></h4>
                           <p>{response.Snippet}</p>
-                          <p><strong>Funding Amount:</strong> ${response.FundingAmount.toLocaleString()}</p>
                         </div>
                       ))}
                     </div>
