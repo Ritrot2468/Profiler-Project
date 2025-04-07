@@ -16,7 +16,7 @@ class FundingParser {
         }
     
         return response.map(this.extractFundingDetails).filter(Boolean);
-    };
+    }
 
 
         /**
@@ -41,7 +41,7 @@ class FundingParser {
         for (const match of matches) {
             try {
                 const [_, currency, amount, , multiplier] = match;
-                const funding = normalizeFundingAmount(amount, multiplier, currency);
+                const funding = FundingParser.normalizeFundingAmount(amount, multiplier, currency);
                 
                 if (funding > maxFunding) {
                     maxFunding = funding;
@@ -60,7 +60,7 @@ class FundingParser {
     
         return bestMatch;
         
-    };
+    }
 
 
     /**
@@ -87,7 +87,7 @@ class FundingParser {
         const conversionRate = CURRENCY_RATES[currencySymbol] || 1;
         
         return cleanedAmount * multiplierValue * conversionRate;
-    };
+    }
 
 
     /**
@@ -96,7 +96,8 @@ class FundingParser {
      * @returns {number} Total funding amount
      */
     static calculateTotalFunding(uniqueFundingAmounts) {
-        const unique = new Set(fundingResults.map(f => parseFloat(f.FundingAmount)));
+        const unique = new Set(uniqueFundingAmounts.map(f => parseFloat(f.FundingAmount)));
         return Array.from(unique).reduce((sum, amount) => sum + amount, 0);
     }
 }
+module.exports = FundingParser;

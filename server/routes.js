@@ -28,7 +28,7 @@ router.get("/", (req, res) => {
     res.send("Welcome to the Search API! Use /search/:accountName to perform a search.");
 });
 
-router.post("chat", async (req, res) => {
+router.post("/chat", async (req, res) => {
 
     const {prompt} = req.body;
     console.log(prompt)

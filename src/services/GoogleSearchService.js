@@ -16,10 +16,11 @@ class GoogleSearchService {
         const refinedQuery = `'${query}' funding`;
         const url = `https://www.googleapis.com/customsearch/v1?q=${encodeURIComponent(
             refinedQuery
-        )}&num=7&key=${API_KEY}&cx=${SEARCH_ENGINE_ID}`;
+        )}&num=7&key=${this.apiKey}&cx=${this.searchEngineId}`;
 
         try {
             const response = await axios.get(url);
+            console.log("google response", response);
             return this.parseResults(response.data.items || []);
         } catch (error) {
             console.error("Google API Error:", error.message);

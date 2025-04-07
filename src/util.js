@@ -3,24 +3,28 @@ const FundingParser = require("../src/helpers/FundingParser");
 const ScoreCalculator = require("../src/helpers/ScoreCalculator");
 const AccountBuilder = require("../src/helpers/AccountBuilder");
 const { sendDataToOpenAI } = require("../src/services/OpenAIService");
-const config = require("../src/config");
+const dotenv = require("dotenv");
+dotenv.config();
 
-//const API_KEY = process.env.GOOGLE_API_KEY;
-//const SEARCH_ENGINE_ID = process.env.SEARCH_ENGINE_ID;
-
-const googleSearch = new GoogleSearchService(config.API_KEY, config.SEARCH_ENGINE_ID);
 
 async function parseAndSaveFundingAmounts(accountName, productCode, segment) {
+    const GOOGLE_API_KEY = process.env.GOOGLE_API_KEY;
+    const SEARCH_ENGINE_ID = process.env.SEARCH_ENGINE_ID;
+
+    const googleSearch = new GoogleSearchService(GOOGLE_API_KEY, SEARCH_ENGINE_ID);
+    //console.log("instantiated google search service");
     //const GoogleSearchServiceClass = GoogleSearchService(API_KEY, SEARCH_ENGINE_ID);
+    //console.log("started google search");
     const googleResults = await googleSearch.search(accountName);
+    //console.log("finished google search");
     const gptResponse = await sendDataToOpenAI(accountName);
     const fundingResults = FundingParser.extractAll(googleResults);
 
-    const fundingAmount = FundingParser.getTotal(fundingResults);
-    const fundingScore = ScoreCalculator.getFundingScore(fundingAmount);
+    const fundingAmount = FundingParser.calculateTotalFunding(fundingResults);
+    const fundingScore = ScoreCalculator.calculateFundingScore(fundingAmount);
     const productScore = ScoreCalculator.getProductScore(productCode);
     const segmentScore = ScoreCalculator.getSegmentScore(segment);
-    const totalScore = ScoreCalculator.total(productScore, segmentScore, fundingScore);
+    const totalScore = ScoreCalculator.calculateTotalScore(productScore, segmentScore, fundingScore);
 
     return AccountBuilder.build({
         accountName,

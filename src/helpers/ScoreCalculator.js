@@ -27,7 +27,7 @@ class ScoreCalculator {
         } else {
             return 0;
         }
-    };
+    }
 
     /**
      * Simulate function for getting product score.
@@ -70,3 +70,4 @@ class ScoreCalculator {
     }
 
 }
+module.exports= ScoreCalculator

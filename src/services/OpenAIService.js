@@ -1,10 +1,10 @@
 
-//const dotenv = require("dotenv");
+const dotenv = require("dotenv");
+dotenv.config();
 const OpenAI = require('openai');
-const config = require("../config");
 
 const openai = new OpenAI({
-    apiKey: config.OPENAI_API_KEY,
+    apiKey: process.env.OPENAI_API_KEY,
 });
 
 

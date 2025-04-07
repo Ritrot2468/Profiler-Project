@@ -24,3 +24,4 @@ class AccountBuilder {
         };
     }
 }
+module.exports = AccountBuilder;
