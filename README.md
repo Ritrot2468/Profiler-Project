@@ -10,7 +10,7 @@
 - **Backend**: Node.js
 - **APIs**: Google Search, OpenAI
 - **Deployment**: Vercel, Heroku
-- **Languages**: JavaScript, TypeScript, Python, HTML, CSS
+- **Languages**: JavaScript, TypeScript
 
 ---
 
